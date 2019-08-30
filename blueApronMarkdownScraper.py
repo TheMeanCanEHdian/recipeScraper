@@ -1,17 +1,22 @@
 import os, requests, json, re
 from bs4 import BeautifulSoup
 
+#NOTE: This script requires Python 3
+
 #Description:
 #This script takes a BLue Apron reipe URL and scrapes it into a markdown format and saves the recipe (and ingredient) images for use in Chowdown.
 #If the recipe is vegetarian a
 
 #Settings
+testMode = False #Set to True to run against a test url
 defaultTags = ['meal','blue apron'] #Enter your desired default tags
 vegetarianTag = True #Change to False if you do not want an extra tag added for vegetarian meals
 quickMealTag = True #Change to False if you do not want an extra tag added for quick meals
-downloadIngredientImage = True #Set to True to download the extra ingredient image (False to just download the recipe image)
-extraRecipeInfo = True #Set to True to save extra information like servings and nutrition (False to only grab the Chowdown defaults)
+downloadIngredientImage = False #Set to True to download the extra ingredient image (False to just download the recipe image)
+extraRecipeInfo = False #Set to True to save extra information like servings and nutrition (False to only grab the Chowdown defaults)
 #End of settings
+
+
 
 def grabRecipe(url):
     recipe_dict = {'url':url, 'main':{}, 'ingredients':[], 'instructions':[]}
@@ -109,7 +114,10 @@ def downloadImages(recipe_dict):
 def main():
     user_input = ''
     while user_input != 'exit':
-        user_input = input("Enter URL (exit to quit): \n").lower()
+        if testMode is False:
+            user_input = input("Enter URL (exit to quit): \n").lower()
+        else:
+            user_input = 'https://www.blueapron.com/recipes/sweet-spicy-udon-noodles-with-fried-eggs-vegetables'
         if user_input != 'exit':
             recipe = grabRecipe(user_input)
             print ("Grabbed recipe")
@@ -117,6 +125,8 @@ def main():
             print ("Saved recipe")
             downloadImages(recipe)
             print ("Downloaded images")
+            if testMode is True:
+                break
 
 if __name__ == "__main__":
     main()
