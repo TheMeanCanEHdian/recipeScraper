@@ -12,8 +12,8 @@ testMode = False #Set to True to run against a test url
 defaultTags = ['meal','blue apron'] #Enter your desired default tags
 vegetarianTag = True #Change to False if you do not want an extra tag added for vegetarian meals
 quickMealTag = True #Change to False if you do not want an extra tag added for quick meals
-downloadIngredientImage = False #Set to True to download the extra ingredient image (False to just download the recipe image)
-extraRecipeInfo = False #Set to True to save extra information like servings and nutrition (False to only grab the Chowdown defaults)
+downloadIngredientImage = True #Set to True to download the extra ingredient image (False to just download the recipe image)
+extraRecipeInfo = True #Set to True to save extra information like servings and nutrition (False to only grab the Chowdown defaults)
 #End of settings
 
 
@@ -56,7 +56,7 @@ def grabRecipe(url):
             dict = {}
             instruction.span.decompose() #removes span with step number
             instruction = re.sub(r'\n+', '\n', instruction.text).strip().split('\n')
-            dict.update(title = instruction[0][:-1]) #removes colon from instruction title
+            dict.update(title = instruction[0].rstrip(' ').strip(':')) #remove colon from instruction title
             dict.update(text = instruction[1])
             recipe_dict['instructions'].append(dict)
         return (recipe_dict)
@@ -86,7 +86,7 @@ def saveRecipe(recipe_dict):
         f.write('ready: {}\n'.format(recipe_dict['main']['meal_time']))
         f.write('servings: {}\n'.format(recipe_dict['main']['meal_servings']))
         f.write('nutrition: {} calories\n\n'.format(recipe_dict['main']['meal_nutrition']))
-        f.write('description: \n{}\n'.format(recipe_dict['main']['meal_description']))
+        f.write('description: \n{}\n'.format(recipe_dict['main']['meal_description'].replace(':', ';')))
     f.write('\ningredients: \n')
     for ingredient in recipe_dict['ingredients']:
         if 'unit' in ingredient.keys():
@@ -95,7 +95,7 @@ def saveRecipe(recipe_dict):
             f.write('- {} {}\n'.format(ingredient['amount'], ingredient['ingredient']))
     f.write('\ndirections: \n')
     for instruction in recipe_dict['instructions']:
-        f.write('- {}; {}\n'.format(instruction['title'][:-1], instruction['text']))
+        f.write('- {}; {}\n'.format(instruction['title'], instruction['text']))
     if extraRecipeInfo is True:
         f.write('\nnotes: \n')
     f.write('\n---')
