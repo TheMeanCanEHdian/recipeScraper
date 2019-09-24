@@ -35,7 +35,7 @@ def grabRecipe(url):
             recipe_dict['main'].update({'meal_quick':True})
         else:
             recipe_dict['main'].update({'meal_quick':False})
-        recipe_dict['main'].update({'title_main':main_section.find("h1").text.strip(), 'title_sub':main_section.find("h2").text.strip(), 'meal_time':main_section.find('div', class_='ba-info-list__item-value').text.strip(), 'meal_servings':main_section.find('span', itemprop='recipeYield').text.strip(), 'meal_nutrition':main_section.find('span', itemprop='calories').text.strip(), 'meal_description':main_section.find('p', itemprop='description').text, 'meal_image':main_section.find('img')["src"]})
+        recipe_dict['main'].update({'title_main':main_section.find("h1").text.strip(), 'title_sub':main_section.find("h2").text.strip(), 'meal_time':main_section.find('div', class_='ba-info-list__item-value').text.strip(), 'meal_servings':main_section.find('span', itemprop='recipeYield').text.strip(), 'meal_calories':main_section.find('span', itemprop='calories').text.strip(), 'meal_description':main_section.find('p', itemprop='description').text, 'meal_image':main_section.find('img')["src"]})
         #ingredient section
         ingredients_section = soup.find_all('li', itemprop='recipeIngredient')
         for ingredient in ingredients_section:
@@ -85,7 +85,7 @@ def saveRecipe(recipe_dict):
         f.write('cook: \n')
         f.write('ready: {}\n'.format(recipe_dict['main']['meal_time']))
         f.write('servings: {}\n'.format(recipe_dict['main']['meal_servings']))
-        f.write('nutrition: {} calories\n\n'.format(recipe_dict['main']['meal_nutrition']))
+        f.write('calories: {}\n\n'.format(recipe_dict['main']['meal_calories']))
         f.write('description: \n{}\n'.format(recipe_dict['main']['meal_description'].replace(':', ';')))
     f.write('\ningredients: \n')
     for ingredient in recipe_dict['ingredients']:
