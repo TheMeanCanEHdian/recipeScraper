@@ -4,16 +4,16 @@ from bs4 import BeautifulSoup
 #NOTE: This script requires Python 3
 
 #Description:
-#This script takes a BLue Apron reipe URL and scrapes it into a markdown format and saves the recipe (and ingredient) images for use in Chowdown.
-#If the recipe is vegetarian a
+#This script takes a BLue Apron reipe URL and scrapes it into a markdown format and saves the recipe (and ingredient) images for use in Salt to Taste or Chowdown.
 
 #Settings
 testMode = False #Set to True to run against a test url
 defaultTags = ['meal','blue apron'] #Enter your desired default tags
 vegetarianTag = True #Change to False if you do not want an extra tag added for vegetarian meals
 quickMealTag = True #Change to False if you do not want an extra tag added for quick meals
-downloadIngredientImage = True #Set to True to download the extra ingredient image (False to just download the recipe image)
-extraRecipeInfo = True #Set to True to save extra information like servings and nutrition (False to only grab the Chowdown defaults)
+downloadIngredientImage = False #Set to True to download the extra ingredient image (False to just download the recipe image)
+extraRecipeInfo = True #Set to False to only grab the Chowdown defaults (True to save extra information like servings and calories for Salt to Taste)
+saveAsMD = False #Set to True to save as a markdown (.md) file for use with Chowdown (False to save as .txt for use with Salt to Taste)
 #End of settings
 
 
@@ -68,9 +68,12 @@ def saveRecipe(recipe_dict):
     formatted_title = '{} {}'.format(recipe_dict['main']['title_main'], recipe_dict['main']['title_sub']).replace(" ", "_").lower()
     if os.path.exists('_recipes') is False:
         os.makedirs('_recipes')
-    f = open('_recipes/{}.md'.format(formatted_title), 'w+', encoding='utf-8')
-    f.write('---\n')
-    f.write('\nlayout: recipe\n')
+    if saveAsMD:
+        f = open('_recipes/{}.md'.format(formatted_title), 'w+', encoding='utf-8')
+        f.write('---\n\n')
+    else:
+        f = open('_recipes/{}.txt'.format(formatted_title), 'w+', encoding='utf-8')
+    f.write('layout: recipe\n')
     f.write('title: "{} {}"\n'.format(recipe_dict['main']['title_main'], recipe_dict['main']['title_sub']))
     f.write('image: {}.jpg\n'.format(formatted_title))
     if vegetarianTag is True and recipe_dict['main']['meal_vegetarian'] is True:
@@ -98,7 +101,8 @@ def saveRecipe(recipe_dict):
         f.write('- {}; {}\n'.format(instruction['title'], instruction['text']))
     if extraRecipeInfo is True:
         f.write('\nnotes: \n')
-    f.write('\n---')
+    if saveAsMD:
+        f.write('\n---')
     f.close()
 
 def downloadImages(recipe_dict):
@@ -117,6 +121,7 @@ def main():
         if testMode is False:
             user_input = input("Enter URL (exit to quit): \n").lower()
         else:
+            print ("Executing test download")
             user_input = 'https://www.blueapron.com/recipes/sweet-spicy-udon-noodles-with-fried-eggs-vegetables'
         if user_input != 'exit':
             recipe = grabRecipe(user_input)
