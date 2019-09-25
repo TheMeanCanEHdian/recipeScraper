@@ -69,10 +69,10 @@ def saveRecipe(recipe_dict):
     if os.path.exists('_recipes') is False:
         os.makedirs('_recipes')
     if saveAsMD:
-        f = open('_recipes/{}.md'.format(formatted_title), 'w+', encoding='utf-8')
+        f = open('_recipes/{}.md'.format(formatted_title), 'w+', encoding='utf-16')
         f.write('---\n\n')
     else:
-        f = open('_recipes/{}.txt'.format(formatted_title), 'w+', encoding='utf-8')
+        f = open('_recipes/{}.txt'.format(formatted_title), 'w+', encoding='utf-16')
     f.write('layout: recipe\n')
     f.write('title: "{} {}"\n'.format(recipe_dict['main']['title_main'], recipe_dict['main']['title_sub']))
     f.write('image: {}.jpg\n'.format(formatted_title))
