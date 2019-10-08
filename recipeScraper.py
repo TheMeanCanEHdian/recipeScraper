@@ -134,11 +134,12 @@ def saveRecipe(recipe_dict, blueApronRecipe = False):
         f.write(f'description: \n{recipe_dict["main"]["meal_description"].replace(":", ";")}\n')
     f.write('\ningredients: \n')
     for ingredient in recipe_dict['ingredients']:
-        #Issue where if there is no amount, unit, or ingredient there will be extra spaces
-        if 'unit' in ingredient.keys():
-            f.write(f'- {ingredient["amount"]} {ingredient["unit"]} {ingredient["ingredient"]}\n')
-        else:
-            f.write(f'- {ingredient["amount"]} {ingredient["ingredient"]}\n')
+        string = '-'
+        for key in ingredient.keys():
+            if ingredient[key]:
+                string = string + f' {ingredient[key]}'
+        f.write(f'{string}\n')
+
     f.write('\ndirections: \n')
     for instruction in recipe_dict["instructions"]:
         if blueApronRecipe:
