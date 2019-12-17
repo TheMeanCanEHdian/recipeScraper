@@ -154,10 +154,10 @@ def saveRecipe(recipe_dict, blueApronRecipe = False):
 
 def downloadImages(recipe_dict):
     formatted_title = f'{recipe_dict["main"]["title_main"]} {recipe_dict["main"]["title_sub"]}'.replace(" ", "_").lower()
-    if os.path.exists('images') is False:
-        os.makedirs('images')
+    if os.path.exists('_images') is False:
+        os.makedirs('_images')
     r = requests.get(recipe_dict['main']['meal_image'])
-    open(f'images/{formatted_title}.jpg', 'wb').write(r.content)
+    open(f'_images/{formatted_title}.jpg', 'wb').write(r.content)
 
 def main():
     user_input = ''
