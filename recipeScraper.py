@@ -114,6 +114,8 @@ def grabHelloFresh(url):
         recipe_dict['calories'] = int(soup.find(string="Calories").find_parent().find_next_sibling().text.strip(' kcal'))
         recipe_dict['description'] = soup.find("p").text.strip()
 
+        if siteTag:
+            recipe_dict['tags'].append('hello fresh')
         if vegetarianTag and soup.find("span", class_="fela-_36rlri", string="Veggie"):
             recipe_dict['tags'].append('vegetarian')
         if quickMealTag and soup.find("span", class_="fela-_fnl8w9", string="20-Min Meal"):
