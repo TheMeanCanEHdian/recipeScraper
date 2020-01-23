@@ -17,8 +17,8 @@ testURL = 'https://www.blueapron.com/recipes/sweet-spicy-udon-noodles-with-fried
 defaultTags = ['meal'] # Enter your desired default tags
 siteTag = True # Change to False if you do not want a 'blue apron' or 'hello fresh' tag
 quickMealTag = True # Change to False if you do not want an extra tag added for quick meals
-# HELLO FRESH ONLY
 vegetarianTag = True # Change to False if you do not want an extra tag added for vegetarian meals
+# HELLO FRESH ONLY
 spicyTag = True # Change to False if you do not want an extra tag added for spicy meals
 # End of settings
 
@@ -45,13 +45,7 @@ def grabBlueApron(url):
     soup = BeautifulSoup(r.text, 'html.parser')
     if r.status_code == 200:
         main_section = soup.find("section", class_="section-recipe recipe-main row")
-        # Blue Apron has removed these icons from their site showing if a meal was vegetarian or quick
-        # if main_section.find('svg', class_='icon-svg icon-svg--veg'):
-        #     recipe_dict['tags'].append('vegetarian')
-        #     main_section.find('svg', class_='icon-svg icon-svg--veg').decompose()
-        # quickmeal = main_section.find('span', class_='is-quickmeal')
-        # if quickmeal is not None:
-        #     recipe_dict['tags'].append('quick meal')
+        
         recipe_dict['title'] = f"{main_section.find('h1').text.strip()} {main_section.find('h2').text.strip()}"
         recipe_dict['ready'] = int(f"{main_section.find('span', class_='total-time').text.strip().split(' ')[0]}")
         recipe_dict['servings'] = int(f"{main_section.find('span', itemprop='recipeYield').text.strip()}")
@@ -61,8 +55,13 @@ def grabBlueApron(url):
 
         if siteTag:
             recipe_dict['tags'].append('blue apron')
-        if quickMealTag:
+        if quickMealTag and recipe_dict['ready'] <= 20:
             recipe_dict['tags'].append("quick meal")
+
+        badges = main_section.find_all('span', class_='culinary-badge')
+        for badge in badges:
+            if badge.text.strip() == "Vegetarian" and vegetarianTag:
+                recipe_dict['tags'].append(badge.text.strip().lower())
 
         ingredients_section = soup.find_all('li', itemprop='recipeIngredient')
         for ingredient in ingredients_section:
