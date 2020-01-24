@@ -45,7 +45,7 @@ def grabBlueApron(url):
     soup = BeautifulSoup(r.text, 'html.parser')
     if r.status_code == 200:
         main_section = soup.find("section", class_="section-recipe recipe-main row")
-        
+
         recipe_dict['title'] = f"{main_section.find('h1').text.strip()} {main_section.find('h2').text.strip()}"
         recipe_dict['ready'] = int(f"{main_section.find('span', class_='total-time').text.strip().split(' ')[0]}")
         recipe_dict['servings'] = int(f"{main_section.find('span', itemprop='recipeYield').text.strip()}")
@@ -152,6 +152,7 @@ def saveRecipe(title, recipe_dict, directory="recipes"):
     with open(file, 'w', encoding='utf-8') as f:
         yaml.add_representer(OrderedDict, lambda dumper, data: dumper.represent_mapping('tag:yaml.org,2002:map', data.items()))
         yaml.dump(recipe_dict, f, allow_unicode=True, sort_keys=False)
+        print (f"Saved file")
 
 def downloadImage(recipe_dict, directory="images"):
     title_formatted = recipe_dict['title'].replace(' ', '-').lower()
@@ -165,6 +166,9 @@ def downloadImage(recipe_dict, directory="images"):
             os.makedirs(directory)
 
         open(f'{directory}/{title_formatted}.{ext}', 'wb').write(r.content)
+        print (f"Saved image")
+
+    return f'{title_formatted}.{ext}'
 
 def main():
     user_input = ''
@@ -185,10 +189,10 @@ def main():
             else:
                 raise ValueError('URL was not for Hello Fresh or Blue Apron')
             print (f"Grabbed {recipe['title']}")
+            image = downloadImage(recipe)
+            recipe['image'] = image
             saveRecipe(recipe['title'], recipe)
-            print (f"Saved file")
-            downloadImage(recipe)
-            print (f"Saved image")
+
             if testMode is True:
                 break
 
